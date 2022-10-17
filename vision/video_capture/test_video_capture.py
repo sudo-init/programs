@@ -35,11 +35,13 @@ class VideoCapture():
         file_path = file_path + '/captured_images'
         
         try:
-            if os.path.exists(file_path):
+            if not os.path.exists(file_path):
                 os.makedirs(file_path)
         
         except OSError as e:
             logging.exception(e)
+
+        return file_path
 
 
     def saveImage(self, images, file_path=None):
@@ -50,14 +52,14 @@ class VideoCapture():
             file_path (string, optional): 이미지가 저장될 위치. Defaults to None.
         """
         
-        # 디렉토리 생성
-        self.createDirectory(file_path)
+        # 디렉토리 생성 및 경로 반환
+        file_path = self.createDirectory(file_path)
         
         # 이미지 저장
         for i, image in enumerate(images):
-            bgr_img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            # bgr_img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             path = file_path + '/' + 'image_' + str(i) + '.jpg'
-            cv2.imwrite(path, bgr_img)
+            cv2.imwrite(path, image)
 
     def run(self, path, file):
         total_path = os.path.join(path, file)
@@ -68,7 +70,7 @@ class VideoCapture():
             
             images = self.imageCapture(vc)   # capture of images
             self.logger.info('image capture completed!')
-            self.logger.info()
+            # self.logger.info()
             
             self.saveImage(images, path)           # saving images
             self.logger.info('saving images completed!')
@@ -77,8 +79,8 @@ class VideoCapture():
             logging.exception(e)
         
 def main():
-    path = 'D:/delta_robot/data'
-    file_name = 'ham.mp4'
+    path = 'C:/Users/user/projects/delta_robot/yolov5/runs/detect/exp'
+    file_name = 'test.mp4'
     # file_path = os.path.join(path, file_name)
     
     VideoCapture().run(path, file_name)
