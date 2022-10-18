@@ -1,6 +1,7 @@
 import socket
 import logging
 
+
 IP = '127.0.0.1'
 PORT = 8080
 SIZE = 1024
@@ -20,22 +21,33 @@ logging.basicConfig(
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     server_socket.bind(ADDR)
     server_socket.listen()
+    client_socket, client_addr = server_socket.accept()
+    logging.info('Server socket generated.')
+    logging.info('Waiting for connection')
 
-    try:
-        client_socket, client_addr = server_socket.accept()
+    with client_socket:
+        logging.info(f'Connected by {client_addr}')
+        client_socket.send('Connection success!'.encode())
 
-        with client_socket:
-            logging.info(f'Connected by {client_addr}')
+        while True:
 
-            while True:
+            msg = client_socket.recv(SIZE)
+            if msg:
+                logging.info(msg.decode())
+
+            
                 
-                msg = client_socket.recv(SIZE)
+                # 트리거 전송
+                
+                
+                # 모델 좌표계산
+                
+                
+                # 좌표 전송
     
-    except Exception as e:
-        logging.exception(e)
+    
 
-    # finally:
-    #     client_socket.close()
+
 
     
 
