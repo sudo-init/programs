@@ -33,7 +33,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     #     client_socket.send('Connection success!'.encode())
 
     sockets = [server_socket]
-
+    
     while True:
         readable_sockets, _, _ = select(sockets, [], [])
         
@@ -45,16 +45,24 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
                     logging.info(f'Connected by {new_client_addr}')
                     new_client_socket.send('Successfully connected to the server.'.encode('utf-8'))
                     sockets.append(new_client_socket)
+                    
 
                 else:   # 기존 클라이언트의 요청
-                    data = s.recv(SIZE).decode('utf-8')
-
+                    data = s.recv(SIZE)
+                    # logging.info(data)
                     if data: # 클라이언트에서 데이터가 들어왔을 때
+                        data = data.decode('utf-8')
                         logging.info(f'received message: {data}')
+                        s.send('server received the message successfully.'.encode('utf-8'))
                     else:
                         s.close()
                         sockets.remove(s)
-            
+
+        except ConnectionResetError as cre:
+            # logging.info()
+            s.close()
+            sockets.remove(s)
+
         except Exception as e:
             logging.exception(e)
             
