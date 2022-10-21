@@ -37,7 +37,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
             send_msg = f'connection test {test_list[idx]}'.encode('utf-8')
             client_socket.send(send_msg)
             idx += 1
-            # idx = 0
+        
+        else:
+            break
 
         # if keyboard.is_pressed('Esc'):
         #         logging.info('클라이언트를 종료합니다.')
