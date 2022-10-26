@@ -5,7 +5,7 @@ import threading
 from math import ceil
 
 # from utils.general import LOGGER
-# from general import LOGGER
+from general import LOGGER
 
 class VideoModule:
 
