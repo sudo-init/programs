@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # YOLOv5 🚀 by Ultralytics, GPL-3.0 license
 
 
@@ -24,32 +22,21 @@ ROOT = FILE.parents[0]  # YOLOv5 root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
->>>>>>> a4db5ada8551650e0382b1cd406a4d90682d96b5
+
 
 
 class model:
-    
-<<<<<<< HEAD
-    
-    def __init__(self):
-=======
+
     def __init__(self):
         image_width = ''
         image_height = ''
         
->>>>>>> a4db5ada8551650e0382b1cd406a4d90682d96b5
         self.model = self.loadModel()
     
-    
     def loadModel(self):
-<<<<<<< HEAD
-        
         pass
         
     def detect(self):
-        pass
-    
-=======
         pass
     
     
@@ -231,6 +218,6 @@ def main(opt):
 if __name__ == "__main__":
     opt = parse_opt()
     main(opt)
->>>>>>> a4db5ada8551650e0382b1cd406a4d90682d96b5
+
 
     
