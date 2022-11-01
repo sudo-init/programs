@@ -24,16 +24,19 @@ if str(ROOT) not in sys.path:
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 
+
 class model:
-    
+
     def __init__(self):
         image_width = ''
         image_height = ''
         
         self.model = self.loadModel()
     
-    
     def loadModel(self):
+        pass
+        
+    def detect(self):
         pass
     
     
@@ -215,5 +218,6 @@ def main(opt):
 if __name__ == "__main__":
     opt = parse_opt()
     main(opt)
+
 
     
