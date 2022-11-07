@@ -30,5 +30,11 @@ if __name__ == '__main__':
     # label.show()
     # app.exec()
     
-    app = QApplication(sys.argv)
-    # label
+    # app = QApplication(sys.argv)
+    app = QApplication([])
+    label = QLabel("Hello world, I'm python")
+    label.show()
+    # sys.exit(app.exec_())  # python
+    app.exec()
+    
+    
