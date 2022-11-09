@@ -27,6 +27,8 @@ def set_logging():
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)     # 로그 출력 형태 설정
     logger.addHandler(stream_handler)
+    
+    return logger
 
 LOGGER = set_logging()
 
