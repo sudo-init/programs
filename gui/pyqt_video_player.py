@@ -12,11 +12,13 @@ from general import LOGGER
 
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
+    
     def __init__(self):
         super().__init__()
         # self.change_pixmap_signal = pyqtSignal(np.ndarray)
         self.cap = cv2.VideoCapture(cv2.CAP_DSHOW + 0)
-        print('video thread init')
+        # self.cap = cv2.VideoCapture(0)
+        # print('video thread init')
 
     def __del__(self):
         self.cap.release()
@@ -25,6 +27,7 @@ class VideoThread(QThread):
         # capture from web cam
         while True:
             ret, cv_img = self.cap.read()
+            print('Video running..')
 
             if ret:
                 self.change_pixmap_signal.emit(cv_img)
@@ -37,19 +40,13 @@ class VideoPlayer(QWidget):
         self.display_height = 480
         
         # create the label that holds the image
-        self.image_label = QLabel(self)
+        self.image_label = QLabel()
         # self.image_label.resize(self.disply_width, self.display_height)
         self.image_label.resize(self.display_width, self.display_height)
-        # create a text label
-        self.textLabel = QLabel('Webcam')
-
+ 
         # create a vertical box layout and add the two labels
         vbox = QVBoxLayout()
-        vbox.addWidget(self.textLabel)
         vbox.addWidget(self.image_label)
-        
-        self.window_width = 0
-        self.window_height = 0
         
         # set the vbox layout as the widgets layout
         self.setLayout(vbox)
@@ -57,18 +54,18 @@ class VideoPlayer(QWidget):
         
         # create the video capture thread
         self.thread = VideoThread()
-        # connect its signal to the update_image slot
-        self.thread.change_pixmap_signal.connect(self.update_image)
+        # connect its signal to the updateImage slot
+        self.thread.change_pixmap_signal.connect(self.updateImage)
         # start the thread
         self.thread.start()
 
     @pyqtSlot(np.ndarray)
-    def update_image(self, cv_img):
+    def updateImage(self, cv_img):
         """Updates the image_label with a new opencv image"""
-        qt_img = self.convert_cv_qt(cv_img)
+        qt_img = self.convertCvQt(cv_img)
         self.image_label.setPixmap(qt_img)
     
-    def convert_cv_qt(self, cv_img):
+    def convertCvQt(self, cv_img):
         """Convert from an opencv image to QPixmap"""
         rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
         h, w, ch = rgb_image.shape
