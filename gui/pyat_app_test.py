@@ -18,13 +18,13 @@ class MainWindow(QWidget):
         self.window_width = 1200
         self.window_height = 800
         self.tmp_pos = 200
-        self.bg_r = 30
-        self.bg_g = 30
-        self.bg_b = 30
+        self.bg_r = 38
+        self.bg_g = 50
+        self.bg_b = 56
         
         # main window settings
-        self.setGeometry(self.tmp_pos, self.tmp_pos, self.window_width, self.window_height)
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # 타이틀바 없애기
+        # self.setGeometry(self.tmp_pos, self.tmp_pos, self.window_width, self.window_height)
+        # self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # 타이틀바 없애기
         
         # main window palette
         main_pal = QPalette()
@@ -55,8 +55,7 @@ class MainWindow(QWidget):
         video_player = VideoPlayer()
         video_player.setParent(middle_widget)
         
-        # test 
-        # test_label = QLabel(text='TEST', parent=widget)
+        test_label = QLabel(text='TEST', parent = middle_widget)
         
         # ok_button = QPushButton(text='OK', parent=self)
         # ok_button.clicked.connect(self.okButtonPressed)
@@ -69,11 +68,13 @@ class MainWindow(QWidget):
                                   border-color: white")
         
         close_button = QPushButton(text='Close')
-        close_button.setStyleSheet("color: white;\
+        close_button.setStyleSheet("color: black;\
                                 min-width: 120px;\
                                 min-height: 30px;\
                                 font-size: 16px;\
-                                background-color: rgb(58, 134, 255);")
+                                font-style: consolas;\
+                                background-color: rgb(242, 243, 237);")
+                                # font-weight: bold;\
         # close_button_w = close_button.size().width()
         # close_button_h = close_button.size().height()
         # close_button_x = self.window_width - close_button_w - 20
@@ -86,13 +87,23 @@ class MainWindow(QWidget):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         main_layout.addWidget(title_label)
+        main_layout.addStretch(1)
         main_layout.addWidget(middle_widget)
+        main_layout.addStretch(1)
         main_layout.addWidget(bottom_widget)
 
         # middle widget layout
-        middle_layout = QVBoxLayout()
+        # grid
+        # middle_layout = QGridLayout()
+        # middle_widget.setLayout(middle_layout)
+        # middle_layout.addWidget(video_player, 0, 0)
+        # middle_layout.addWidget(test_label, 0, 1)
+        middle_layout = QHBoxLayout()
         middle_widget.setLayout(middle_layout)
         middle_layout.addWidget(video_player)
+        middle_layout.addStretch(1)
+        middle_layout.addWidget(test_label)
+        
         
         # bottom widget layout
         bottom_layout = QHBoxLayout()
@@ -114,10 +125,11 @@ class MainWindow(QWidget):
         
         if reply == QMessageBox.Yes:
             QCoreApplication.instance().quit()
-        
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
+    # main_window.showMaximized()
     app.exec()
