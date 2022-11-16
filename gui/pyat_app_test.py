@@ -14,7 +14,7 @@ class MainWindow(QWidget):
         super(MainWindow, self).__init__()
         self.initUI()
         
-        self.close_button.clicked.connect(self.closeEvent)
+        self.close_button.clicked.connect(self.closeButtonClicked)
         
     def initUI(self):
         self.window_width = 1200
@@ -97,10 +97,10 @@ class MainWindow(QWidget):
         bottom_layout.addWidget(self.close_button)
         
         
-    def okButtonPressed(self):
+    def okButtonClicked(self):
         print('OK button Pressed!')
         
-    def closeEvent(self):
+    def closeButtonClicked(self):
         quit_msg = '종료하시겠습니까?'
         reply = QMessageBox.question(self, '알림', quit_msg, QMessageBox.Yes, QMessageBox.No)
         

@@ -6,19 +6,19 @@ import logging
 로그 셋팅
 """
 
-logging.basicConfig(
-    level=logging.INFO,
+# logging.basicConfig(
+#     level=logging.INFO,
 
-    # 로그 출력 형태
-    # format="%(asctime)s [%(levelname)s] %(message)s",
-    format = '[%(asctime)s] %(message)s'
+#     # 로그 출력 형태
+#     # format="%(asctime)s [%(levelname)s] %(message)s",
+#     format = '[%(asctime)s] %(message)s'
 
-    # 로그 파일 저장
-    # handlers=[
-    #     logging.FileHandler("debug.log"),
-    #     logging.StreamHandler()
-    # ]
-)
+#     # 로그 파일 저장
+#     # handlers=[
+#     #     logging.FileHandler("debug.log"),
+#     #     logging.StreamHandler()
+#     # ]
+# )
 
 def set_logging():
     logger = logging.getLogger()   

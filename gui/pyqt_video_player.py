@@ -4,9 +4,9 @@ import sys
 import numpy as np
 
 from PyQt5 import QtGui
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread, QTimer, QTime
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QHBoxLayout, \
-                            QPushButton, QGridLayout
+                            QPushButton, QGridLayout, QLCDNumber
 from PyQt5.QtGui import QPixmap, QImage
 
 from general import LOGGER
@@ -37,13 +37,17 @@ class VideoPlayer(QWidget):
         
         self.captured_img_count = 0
         
-        # create the video capture thread
+        # video thread
         self.thread = VideoThread()
-        # connect its signal to the updateImage slot
-        self.thread.change_pixmap_signal.connect(self.updateImage)
-        # start the thread
+        self.thread.change_pixmap_signal.connect(self.updateImage) # connect its signal to the updateImage slot
         self.thread.start()
         
+        # timer
+        self.timer.timeout.connect(self.timeout)
+        
+        
+        # button action
+        # self.start_button.clicked.connect()
         self.capture_button.clicked.connect(self.captureImage)
         self.save_button.clicked.connect(self.saveImage)
         
@@ -58,10 +62,17 @@ class VideoPlayer(QWidget):
         self.start_button = QPushButton(text='Start')
         self.stop_button = QPushButton(text='Stop')
         self.time_label = QLabel(text='경과시간:')
+        self.timer = QTimer()
+        self.timer.setInterval(1000)
+        self.time = QTime().fromString('00:00:00', 'hh:mm:ss')
+        self.lcd = QLCDNumber()
+        self.lcd.setDigitCount(8)
+        self.lcd.display(self.time.toString('hh:mm:ss'))
+        
         
         # component of capture widgets
         self.capture_label = QLabel()
-        self.capture_label.setPixmap(returnQPixmap(np.zeros((480, 680, 1))))
+        self.capture_label.setPixmap(returnQPixmap(np.zeros((480, 640, 1))))
         self.capture_utils_widget = QWidget()
         self.capture_button = QPushButton(text='Capture')
         self.save_button = QPushButton(text='Save')
@@ -72,6 +83,7 @@ class VideoPlayer(QWidget):
         video_utils_layout.addWidget(self.start_button, 0, 0)
         video_utils_layout.addWidget(self.stop_button, 0, 1)
         video_utils_layout.addWidget(self.time_label, 1, 0)
+        video_utils_layout.addWidget(self.lcd, 1, 1)
         video_layout = QVBoxLayout(self.video_widget)
         video_layout.addWidget(self.image_label)
         video_layout.addWidget(self.video_utils_widget)
@@ -108,7 +120,9 @@ class VideoPlayer(QWidget):
         self.captured_img_count += 1
         LOGGER.info('saved image.')
         
-    
+    def timeout(self):
+        sender = self.sender()
+        time = QTime.addSecs()
     
 
 def convertCvQt(cv_img):
