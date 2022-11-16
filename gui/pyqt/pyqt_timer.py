@@ -24,6 +24,8 @@ class Timer(QWidget):
         self.lcd = QLCDNumber()
         self.lcd.setDigitCount(8)
         self.lcd.display('00:00:00')
+        self.lcd.setStyleSheet('border-style: None;')
+        self.lcd.setSegmentStyle(2)
         
         # buttons
         self.start_button = QPushButton('start')

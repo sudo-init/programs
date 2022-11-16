@@ -67,7 +67,10 @@ class VideoPlayer(QWidget):
         self.time = QTime().fromString('00:00:00', 'hh:mm:ss')
         self.lcd = QLCDNumber()
         self.lcd.setDigitCount(8)
+        self.lcd.setSegmentStyle(2)
         self.lcd.display(self.time.toString('hh:mm:ss'))
+        # self.lcd.setStyleSheet('border-style: None;')
+        self.lcd.setFixedSize(200, 70)
         
         
         # component of capture widgets
@@ -80,10 +83,10 @@ class VideoPlayer(QWidget):
         
         # video layout
         video_utils_layout = QGridLayout(self.video_utils_widget)
-        video_utils_layout.addWidget(self.start_button, 0, 0)
-        video_utils_layout.addWidget(self.stop_button, 0, 1)
-        video_utils_layout.addWidget(self.time_label, 1, 0)
-        video_utils_layout.addWidget(self.lcd, 1, 1)
+        video_utils_layout.addWidget(self.start_button, 0, 0, 1, 1)
+        video_utils_layout.addWidget(self.stop_button, 0, 1, 1, 1)
+        video_utils_layout.addWidget(self.time_label, 1, 0, 1, 1)
+        video_utils_layout.addWidget(self.lcd, 1, 1, 2, 2)
         video_layout = QVBoxLayout(self.video_widget)
         video_layout.addWidget(self.image_label)
         video_layout.addWidget(self.video_utils_widget)
