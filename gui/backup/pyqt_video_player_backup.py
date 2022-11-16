@@ -55,6 +55,8 @@ class VideoPlayer(QWidget):
         self.thread.change_pixmap_signal.connect(self.updateImage)
         # start the thread
         self.thread.start()
+        
+        
 
     @pyqtSlot(np.ndarray)
     def updateImage(self, cv_img):

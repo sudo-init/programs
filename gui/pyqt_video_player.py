@@ -6,7 +6,7 @@ import numpy as np
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QHBoxLayout, \
-                            QPushButton
+                            QPushButton, QGridLayout
 from PyQt5.QtGui import QPixmap, QImage
 
 from general import LOGGER
@@ -30,24 +30,12 @@ class VideoThread(QThread):
 
 
 class VideoPlayer(QWidget):
+    
     def __init__(self):
         super().__init__()
-        # self.display_width = 640
-        # self.display_height = 480
+        self.initUI()
         
-        # create the label that holds the image
-        self.image_label = QLabel()
-  
-        # self.image_label.resize(self.display_width, self.display_height)
- 
-        # create a vertical box layout and add the two labels
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.image_label)
-        vbox.addWidget(self.captured_label)
-        
-        # set the vbox layout as the widgets layout
-        self.setLayout(vbox)
-        # self.setGeometry(200, 200, self.display_width, self.display_height)
+        self.captured_img_count = 0
         
         # create the video capture thread
         self.thread = VideoThread()
@@ -55,45 +43,75 @@ class VideoPlayer(QWidget):
         self.thread.change_pixmap_signal.connect(self.updateImage)
         # start the thread
         self.thread.start()
+        
+        self.capture_button.clicked.connect(self.captureImage)
+        self.save_button.clicked.connect(self.saveImage)
+        
+    def initUI(self):
+        # main widgets
+        self.video_widget = QWidget()
+        self.capture_widget = QWidget()
+        
+        # component of video widgets
+        self.image_label = QLabel()
+        self.video_utils_widget = QWidget()
+        self.start_button = QPushButton(text='Start')
+        self.stop_button = QPushButton(text='Stop')
+        self.time_label = QLabel(text='경과시간:')
+        
+        # component of capture widgets
+        self.capture_label = QLabel()
+        self.capture_label.setPixmap(returnQPixmap(np.zeros((480, 680, 1))))
+        self.capture_utils_widget = QWidget()
+        self.capture_button = QPushButton(text='Capture')
+        self.save_button = QPushButton(text='Save')
+        self.state_label = QLabel('Test')
+        
+        # video layout
+        video_utils_layout = QGridLayout(self.video_utils_widget)
+        video_utils_layout.addWidget(self.start_button, 0, 0)
+        video_utils_layout.addWidget(self.stop_button, 0, 1)
+        video_utils_layout.addWidget(self.time_label, 1, 0)
+        video_layout = QVBoxLayout(self.video_widget)
+        video_layout.addWidget(self.image_label)
+        video_layout.addWidget(self.video_utils_widget)
+        
+        # capture layout
+        capture_utils_layout = QGridLayout(self.capture_utils_widget)
+        capture_utils_layout.addWidget(self.capture_button, 0, 3)
+        capture_utils_layout.addWidget(self.save_button, 1, 3)
+        capture_utils_layout.addWidget(self.state_label, 0, 0)
+        capture_layout = QVBoxLayout(self.capture_widget)
+        capture_layout.addWidget(self.capture_label)
+        capture_layout.addWidget(self.capture_utils_widget)
+        
+        # main layout
+        main_layout = QHBoxLayout(self)
+        main_layout.addWidget(self.video_widget)
+        main_layout.addWidget(self.capture_widget)
 
     @pyqtSlot(np.ndarray)
     def updateImage(self, cv_img):
         """Updates the image_label with a new opencv image"""
-        qt_img = convertCvQt(cv_img)
-        self.image_label.setPixmap(qt_img)
-    
-    # def convertCvQt(self, cv_img):
-    #     """Convert from an opencv image to QPixmap"""
-    #     rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-    #     h, w, ch = rgb_image.shape
-    #     # bytes_per_line = ch * w
-    #     # convert_to_qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-    #     convert_to_qt_format = QImage(rgb_image.data, w, h, QtGui.QImage.Format_RGB888)
-    #     # p = convert_to_Qt_format.scaled(self.display_width, self.display_height, Qt.KeepAspectRatio)
-    #     return QPixmap(convert_to_qt_format)
-    #     # return convert_to_qt_format
-
-
-class VideoCapturer(QWidget):
-    
-    def __init__(self):
-        super().__init__()
-        self.captured_label = QLabel()
-        self.capture_button = QPushButton()
+        self.cv_img = cv_img
+        self.qt_img = convertCvQt(cv_img)
+        self.image_label.setPixmap(self.qt_img)
+ 
+    def captureImage(self):
+        self.captured_img = self.qt_img
+        self.captured_cv_img = self.cv_img
+        self.capture_label.setPixmap(self.captured_img)
         
-        self.layout = QHBoxLayout()
-        self.layout.addWidget(self.captured_label)
-        self.layout.addWidget(self.capture_button)
+    def saveImage(self):
+        file_path = './'
+        cv2.imwrite(file_path + 'captured_img' + str(self.captured_img_count) + '.jpg', self.captured_cv_img)
+        self.captured_img_count += 1
+        LOGGER.info('saved image.')
         
-        self.setLayout(self.layout)
-        
-    @pyqtSlot(np.ndarray)
-    def updateImage(self, cv_img):
-        pass
     
     
 
-def convertCvQt(self, cv_img):
+def convertCvQt(cv_img):
     """Convert from an opencv image to QPixmap"""
     rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
     h, w, ch = rgb_image.shape
@@ -103,6 +121,11 @@ def convertCvQt(self, cv_img):
     # p = convert_to_Qt_format.scaled(self.display_width, self.display_height, Qt.KeepAspectRatio)
     return QPixmap(convert_to_qt_format)
     # return convert_to_qt_format
+
+def returnQPixmap(img):
+    h, w, ch = img.shape
+    format = QImage(img.data, w, h, QtGui.QImage.Format_RGB888)    
+    return QPixmap(format)
 
 
 if __name__=="__main__":

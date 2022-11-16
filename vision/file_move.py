@@ -5,7 +5,7 @@ import shutil
 
 class FileMove():
 
-    def __init__(self):
+    def __init__(self, path_list=None):
         self.logger = Logger()
         
         
