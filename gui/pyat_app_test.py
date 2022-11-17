@@ -15,6 +15,7 @@ class MainWindow(QWidget):
         self.initUI()
         
         self.close_button.clicked.connect(self.closeButtonClicked)
+
         
     def initUI(self):
         self.window_width = 1200
