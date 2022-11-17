@@ -20,6 +20,7 @@ class VideoThread(QThread):
         self.cap = cv2.VideoCapture(cv2.CAP_DSHOW + 0)
         self.frame_count = 0
         self.save_per_frame = 50
+        self.capture_signal = False
 
     def __del__(self):
         self.cap.release()
@@ -35,9 +36,12 @@ class VideoThread(QThread):
                 
                 if self.frame_count == self.save_per_frame:
                     self.capture_img_signal.emit(img)
+                    
+
 
 
 class VideoPlayer(QWidget):
+    capture_signal = pyqtSignal(bool)
     
     def __init__(self):
         super().__init__()

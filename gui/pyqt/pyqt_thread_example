@@ -84,7 +84,7 @@ class Worker(QThread):
 
     def __del__(self):
         print(".... end thread.....")
-        self.wait()
+        # self.wait()
 
     def run(self):
         while self.working:
