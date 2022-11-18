@@ -1,6 +1,7 @@
 
 import cv2
 import sys
+import os
 import numpy as np
 
 from PyQt5 import QtGui
@@ -28,19 +29,14 @@ class VideoThread(QThread):
     def run(self):
         while True:
             ret, img = self.cap.read()
-
             if ret:
                 self.change_pixmap_signal.emit(img)
-                
                 if self.capture_signal:
                     self.frame_count += 1
-                
                 if self.frame_count == self.save_per_frame:
                     self.capture_img_signal.emit(img)
-                    self.fram_count = 0
+                    self.frame_count = 0
                     
-
-
 
 class VideoPlayer(QWidget):
     capture_signal = pyqtSignal(bool)
@@ -50,13 +46,20 @@ class VideoPlayer(QWidget):
         
         self.captured_img_count = 0
         self.auto_captured_img_count = 0
-        self.save_file_path = './images/'
+        self.save_file_path = './data/captured_images/'
         self.initUI()
         
+        try: 
+            # 이미지 파일 저장 디렉토리 생성
+            if not os.path.exists(self.save_file_path):
+                os.makedirs(self.save_file_path)
+        except OSError as e:
+            LOGGER.error('Directory Error raised.\n' + str(e))
+            
         # video thread
         self.video_thread = VideoThread()
         self.video_thread.change_pixmap_signal.connect(self.updateImage) # connect its signal to the updateImage slot
-        self.video_thread.capture_img_signal.connect()
+        self.video_thread.capture_img_signal.connect(self.autoCaptureImage)
         self.video_thread.start()
         
         
@@ -71,7 +74,6 @@ class VideoPlayer(QWidget):
         self.stop_button.clicked.connect(self.stopButtonClicked)
         self.stop_button.setEnabled(False)
         
-        
     def initUI(self):
         # main widgets
         self.video_widget = QWidget()
@@ -80,7 +82,7 @@ class VideoPlayer(QWidget):
         self.default_font_size = 10
         
         # component of video widgets
-        self.image_label = QLabel()
+        self.video_player = QLabel()
         self.video_utils_widget = QWidget()
         self.start_button = QPushButton(text='Start')
         self.stop_button = QPushButton(text='Stop')
@@ -96,8 +98,8 @@ class VideoPlayer(QWidget):
         self.save_img_count_display.setFont(QFont(self.default_font, self.default_font_size))
         
         # component of capture widgets
-        self.capture_label = QLabel()
-        self.capture_label.setPixmap(returnQPixmap(np.zeros((480, 640, 1))))
+        self.captured_img_player = QLabel()
+        self.captured_img_player.setPixmap(getQPixmap(np.zeros((480, 640, 1))))
         self.capture_utils_widget = QWidget()
         self.capture_button = QPushButton(text='Capture')
         self.save_button = QPushButton(text='Save')
@@ -114,7 +116,7 @@ class VideoPlayer(QWidget):
         video_utils_layout.addWidget(self.save_img_count_display, 4, 1)
         
         video_layout = QVBoxLayout(self.video_widget)
-        video_layout.addWidget(self.image_label)
+        video_layout.addWidget(self.video_player)
         video_layout.addWidget(self.video_utils_widget)
         
         # capture layout
@@ -123,7 +125,7 @@ class VideoPlayer(QWidget):
         capture_utils_layout.addWidget(self.save_button, 1, 3)
         capture_utils_layout.addWidget(self.state_label, 0, 0)
         capture_layout = QVBoxLayout(self.capture_widget)
-        capture_layout.addWidget(self.capture_label)
+        capture_layout.addWidget(self.captured_img_player)
         capture_layout.addWidget(self.capture_utils_widget)
         
         # main layout
@@ -133,44 +135,54 @@ class VideoPlayer(QWidget):
 
     @pyqtSlot(np.ndarray)
     def updateImage(self, cv_img):
-        """Updates the image_label with a new opencv image"""
+        """Updates the video_player with a new opencv image"""
         self.cv_img = cv_img
         self.qt_img = convertCvQt(cv_img)
-        self.image_label.setPixmap(self.qt_img)
+        self.video_player.setPixmap(self.qt_img)
         
     @pyqtSlot(np.ndarray)
     def autoCaptureImage(self, cv_img):
-        cv2.imwrite(self.save_file_path + 'captured_img' + str(self.captured_img_count) + '.jpg', self.captured_cv_img)
+        cv2.imwrite(self.save_file_path + 'captured_img' + str(self.captured_img_count) + '.jpg', cv_img)
         self.captured_img_count += 1
         LOGGER.info('saved image automatically.')
+        self.save_img_count_display.setText(str(self.captured_img_count))
+        
+        # 캡처 화면에 표시
+        qt_img = convertCvQt(cv_img)
+        self.captured_img_player.setPixmap(qt_img)
  
     def captureImage(self):
         self.captured_img = self.qt_img
         self.captured_cv_img = self.cv_img
-        self.capture_label.setPixmap(self.captured_img)
+        self.captured_img_player.setPixmap(self.captured_img)
         
     def saveImage(self):
         cv2.imwrite(self.save_file_path + 'captured_img' + str(self.captured_img_count) + '.jpg', self.captured_cv_img)
         self.captured_img_count += 1
-        LOGGER.info('saved image.')
+        LOGGER.info('saved image manually.')
+        self.save_img_count_display.setText(str(self.captured_img_count))
         
     def timeout(self):
         self.time = self.time.addSecs(1)
         if id(self.sender()) == id(self.timer):
             self.time_display_label.setText(self.time.toString('hh:mm:ss'))
     
-    @pyqtSlot
     def startButtonClicked(self):
         self.timer.start()
         self.stop_button.setEnabled(True)
         self.start_button.setEnabled(False)
+        self.capture_button.setEnabled(False)
+        self.save_button.setEnabled(False)
+        self.reset_button.setEnabled(False)
         self.video_thread.capture_signal = True
         
-    @pyqtSlot
     def stopButtonClicked(self):
         self.timer.stop()
         self.stop_button.setEnabled(False)
         self.start_button.setEnabled(True)
+        self.capture_button.setEnabled(True)
+        self.save_button.setEnabled(True)
+        self.reset_button.setEnabled(True)
         self.video_thread.capture_signal = False
         self.video_thread.frame_count = 0
         
@@ -178,7 +190,6 @@ class VideoPlayer(QWidget):
         # 알람버튼 뜨도록
         pass
         
-    
 
 def convertCvQt(cv_img):
     """Convert from an opencv image to QPixmap"""
@@ -191,7 +202,7 @@ def convertCvQt(cv_img):
     return QPixmap(convert_to_qt_format)
     # return convert_to_qt_format
 
-def returnQPixmap(img):
+def getQPixmap(img):
     h, w, ch = img.shape
     format = QImage(img.data, w, h, QtGui.QImage.Format_RGB888)    
     return QPixmap(format)
