@@ -187,7 +187,11 @@ class VideoPlayer(QWidget):
         self.video_thread.frame_count = 0
         
     def resetButtonClicked(self):
-        # 알람버튼 뜨도록
+        # 알람버튼 뜨도록 (dialog)
+        # 시간 초기화
+        # 파일 초기화
+        # count 초기화 
+        
         pass
         
 
