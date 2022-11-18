@@ -46,16 +46,16 @@ class MyMain(MyMainGUI):
         self.send_instance_singal.connect(self.th.recive_instance_singal)
         self.show()
 
-    @pyqtSlot()
+    # @pyqtSlot()
     def time_start(self):
         self.th.start()
         self.th.working = True
 
-    @pyqtSlot()
+    # @pyqtSlot()
     def time_stop(self):
         self.th.working = False
 
-    @pyqtSlot()
+    # @pyqtSlot()
     def add_sec(self):
         print(".... add singal emit....")
         self.add_sec_signal.emit()
@@ -64,7 +64,7 @@ class MyMain(MyMainGUI):
     def time_update(self, msg):
         self.qtxt1.append(msg)
 
-    @pyqtSlot()
+    # @pyqtSlot()
     def send_instance(self):
         t1 = Test()
         t1.name = "SuperPower!!!"

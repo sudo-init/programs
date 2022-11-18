@@ -32,10 +32,12 @@ class VideoThread(QThread):
             if ret:
                 self.change_pixmap_signal.emit(img)
                 
-                self.frame_count += 1
+                if self.capture_signal:
+                    self.frame_count += 1
                 
                 if self.frame_count == self.save_per_frame:
                     self.capture_img_signal.emit(img)
+                    self.fram_count = 0
                     
 
 
@@ -48,12 +50,15 @@ class VideoPlayer(QWidget):
         
         self.captured_img_count = 0
         self.auto_captured_img_count = 0
+        self.save_file_path = './images/'
         self.initUI()
         
         # video thread
-        self.thread = VideoThread()
-        self.thread.change_pixmap_signal.connect(self.updateImage) # connect its signal to the updateImage slot
-        self.thread.start()
+        self.video_thread = VideoThread()
+        self.video_thread.change_pixmap_signal.connect(self.updateImage) # connect its signal to the updateImage slot
+        self.video_thread.capture_img_signal.connect()
+        self.video_thread.start()
+        
         
         # timer
         self.timer.timeout.connect(self.timeout)
@@ -132,6 +137,12 @@ class VideoPlayer(QWidget):
         self.cv_img = cv_img
         self.qt_img = convertCvQt(cv_img)
         self.image_label.setPixmap(self.qt_img)
+        
+    @pyqtSlot(np.ndarray)
+    def autoCaptureImage(self, cv_img):
+        cv2.imwrite(self.save_file_path + 'captured_img' + str(self.captured_img_count) + '.jpg', self.captured_cv_img)
+        self.captured_img_count += 1
+        LOGGER.info('saved image automatically.')
  
     def captureImage(self):
         self.captured_img = self.qt_img
@@ -139,8 +150,7 @@ class VideoPlayer(QWidget):
         self.capture_label.setPixmap(self.captured_img)
         
     def saveImage(self):
-        file_path = './'
-        cv2.imwrite(file_path + 'captured_img' + str(self.captured_img_count) + '.jpg', self.captured_cv_img)
+        cv2.imwrite(self.save_file_path + 'captured_img' + str(self.captured_img_count) + '.jpg', self.captured_cv_img)
         self.captured_img_count += 1
         LOGGER.info('saved image.')
         
@@ -149,15 +159,20 @@ class VideoPlayer(QWidget):
         if id(self.sender()) == id(self.timer):
             self.time_display_label.setText(self.time.toString('hh:mm:ss'))
     
+    @pyqtSlot
     def startButtonClicked(self):
         self.timer.start()
         self.stop_button.setEnabled(True)
         self.start_button.setEnabled(False)
-    
+        self.video_thread.capture_signal = True
+        
+    @pyqtSlot
     def stopButtonClicked(self):
         self.timer.stop()
         self.stop_button.setEnabled(False)
         self.start_button.setEnabled(True)
+        self.video_thread.capture_signal = False
+        self.video_thread.frame_count = 0
         
     def resetButtonClicked(self):
         # 알람버튼 뜨도록
