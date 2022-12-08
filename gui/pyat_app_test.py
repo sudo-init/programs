@@ -27,7 +27,7 @@ class MainWindow(QWidget):
         
         # main window settings
         # self.setGeometry(self.tmp_pos, self.tmp_pos, self.window_width, self.window_height)
-        # self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # 타이틀바 없애기
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # 타이틀바 없애기
         
         # main window palette
         main_pal = QPalette()

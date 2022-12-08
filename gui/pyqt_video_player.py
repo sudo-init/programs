@@ -12,6 +12,7 @@ from PyQt5.QtGui import QPixmap, QImage, QFont
 
 from general import LOGGER
 
+
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     capture_img_signal = pyqtSignal(np.ndarray)
@@ -46,7 +47,7 @@ class VideoPlayer(QWidget):
         
         self.captured_img_count = 0
         self.auto_captured_img_count = 0
-        self.save_file_path = './data/captured_images/'
+        self.save_file_path = './data/captured_images2/'
         self.initUI()
         
         try: 

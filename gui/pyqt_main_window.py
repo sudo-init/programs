@@ -15,15 +15,15 @@ class MainWindow(QMainWindow):
         self.initUI()
         
     def initUI(self):
-        self.window_width = 900
-        self.window_height = 600
-        self.tmp_pos = 200
+        self.window_width = 1800
+        self.window_height = 1000
+        self.tmp_pos = 50
         self.bg_r = 30
         self.bg_g = 30
         self.bg_b = 30
         
         # main window settings
-        # self.setWindowTitle('DW Vision System Demo')
+        self.setWindowTitle('DW Vision System Demo')
         self.setGeometry(self.tmp_pos, self.tmp_pos, self.window_width, self.window_height)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # 타이틀바 없애기
         # self.setWindowFlags(Qt.FramelessWindowHint)
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         
         
         video_player = VideoPlayer()
-        video_player.setParent(widget)
+        # video_player.setParent(widget)
         
         # test 
         # test_label = QLabel(text='TEST', parent=widget)
@@ -62,19 +62,19 @@ class MainWindow(QMainWindow):
         # ok_button.move(200, 200)
         
         close_button = QPushButton(text='Close', parent=widget)
-        close_button_w = close_button.size().width()
-        close_button_h = close_button.size().height()
-        close_button_x = self.window_width - close_button_w - 20
-        close_button_y = self.window_height - close_button_h - 20
-        close_button.move(close_button_x, close_button_y)
+        # close_button_w = close_button.size().width()
+        # close_button_h = close_button.size().height()
+        # close_button_x = self.window_width - close_button_w - 20
+        # close_button_y = self.window_height - close_button_h - 20
+        # close_button.move(close_button_x, close_button_y)
         # close_button.clicked.connect(QCoreApplication.instance().quit)
         close_button.clicked.connect(self.closeEvent)
         
         
         
         # widget layout
-        layout = QGridLayout()
-        widget.setLayout(layout)
+        layout = QGridLayout(widget)
+        # widget.setLayout(layout)
         layout.addWidget(title_label, 0, 0)
         layout.addWidget(video_player, 1, 0)
         layout.addWidget(close_button, 2, 0)

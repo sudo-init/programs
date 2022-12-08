@@ -25,7 +25,7 @@ def createDirectory(path):
         print('OS Error raised!')
         print(e)
 
-    
+
 def save_image(file_path, data):
     with open(file_path, 'wb') as f:
         f.write(data)
