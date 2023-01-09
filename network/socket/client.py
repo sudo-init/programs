@@ -26,14 +26,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
     # test_list = [i for i in range(10)]
     idx = 0
-
+    trig = 'TRIG'.encode('utf-8')
     while True:
         data = client_socket.recv(SIZE)
 
         if data:
             msg = data.decode()
-            logging.info(msg) # 서버로부터 응답받은 메시지 출력
-            trig = 'TRIG'.encode('utf-8')
+            logging.info(msg)           # 서버로부터 응답받은 메시지 출력
+            time.sleep(3)
             client_socket.send(trig)
         
             if msg == 'OFF':
@@ -42,7 +42,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         
         # time.sleep(1)
         
-        logging.info('loop running')
+        # logging.info('loop running')
 
         # if keyboard.is_pressed('Esc'):
         #         logging.info('클라이언트를 종료합니다.')
